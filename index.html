@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<!--
+Microtuna - Music Scale Explorer
+A web-based logarithmic spiral frequency visualizer for exploring harmonic relationships
+between musical frequencies with multiple tuning system overlays and intelligent arpeggiator.
+
+Copyright (c) 2025 Peter Thomas
+Licensed under the MIT License - see LICENSE file for details
+-->
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microtuna - Music Scale Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+        <div class="container-fluid">
+            <span class="navbar-brand"><i class="bi bi-music-note-beamed"></i> Microtuna</span>
+            
+            <!-- Audio Controls -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 small">Wave:</label>
+                    <select id="wave-type" class="form-select form-select-sm" style="width: 100px;">
+                        <option value="sine">Sine</option>
+                        <option value="triangle">Triangle</option>
+                        <option value="square">Square</option>
+                        <option value="sawtooth">Sawtooth</option>
+                    </select>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 small">Volume:</label>
+                    <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-volume-down"></i>
+                            <input type="range" class="form-range flex-grow-1" id="volume-slider" 
+                                   min="0" max="100" value="50" style="width: 80px;">
+                            <span class="small text-muted" id="volume-display">50%</span>
+                        </div>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 small">Zoom:</label>
+                    <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-zoom-out"></i>
+                            <input type="range" class="form-range flex-grow-1" id="zoom-slider" 
+                                   min="0.5" max="2.0" step="0.1" value="1.0" style="width: 80px;">
+                            <span class="small text-muted" id="zoom-display">100%</span>
+                        </div>
+                </div>
+                
+                <button id="audio-toggle" class="btn btn-outline-danger btn-sm btn-audio">
+                    <i class="bi bi-play-fill"></i> Start Audio
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="main-container">
+        <!-- Top Section: Spiral and Panels -->
+        <div class="top-section">
+            <div class="d-flex h-100">
+                <!-- Tuning Systems Panel -->
+                <div id="tuning-panel" class="bg-dark p-3 border-right">
+                    <h6 class="mb-3">
+                        <i class="bi bi-grid-3x3-gap"></i> Tuning Systems
+                        <button id="toggle-tuning-panel" class="btn btn-outline-secondary btn-sm float-end">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                    </h6>
+                    
+                    <!-- Western Systems -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <button class="btn btn-link btn-sm p-0 text-light" data-bs-toggle="collapse" data-bs-target="#western-systems">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <small class="ms-2 text-uppercase text-muted fw-bold">Western</small>
+                        </div>
+                        <div class="collapse show" id="western-systems">
+                            <div class="tuning-option" data-system="12-tet">
+                                <input type="checkbox" id="12-tet" class="form-check-input">
+                                <label for="12-tet" class="form-check-label small">12-TET (Equal)</label>
+                                <div class="tuning-indicator" style="background-color: #fff;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="12-tet" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="just">
+                                <input type="checkbox" id="just" class="form-check-input">
+                                <label for="just" class="form-check-label small">Just Intonation</label>
+                                <div class="tuning-indicator" style="background-color: #28a745;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="just" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="pythagorean">
+                                <input type="checkbox" id="pythagorean" class="form-check-input">
+                                <label for="pythagorean" class="form-check-label small">Pythagorean</label>
+                                <div class="tuning-indicator" style="background-color: #ffc107;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="pythagorean" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="meantone">
+                                <input type="checkbox" id="meantone" class="form-check-input">
+                                <label for="meantone" class="form-check-label small">Meantone</label>
+                                <div class="tuning-indicator" style="background-color: #fd7e14;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="meantone" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Microtonal Systems -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <button class="btn btn-link btn-sm p-0 text-light" data-bs-toggle="collapse" data-bs-target="#microtonal-systems">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <small class="ms-2 text-uppercase text-muted fw-bold">Microtonal</small>
+                        </div>
+                        <div class="collapse" id="microtonal-systems">
+                            <div class="tuning-option" data-system="19-tet">
+                                <input type="checkbox" id="19-tet" class="form-check-input">
+                                <label for="19-tet" class="form-check-label small">19-TET</label>
+                                <div class="tuning-indicator" style="background-color: #6f42c1;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="19-tet" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="31-tet">
+                                <input type="checkbox" id="31-tet" class="form-check-input">
+                                <label for="31-tet" class="form-check-label small">31-TET</label>
+                                <div class="tuning-indicator" style="background-color: #e83e8c;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="31-tet" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="53-tet">
+                                <input type="checkbox" id="53-tet" class="form-check-input">
+                                <label for="53-tet" class="form-check-label small">53-TET</label>
+                                <div class="tuning-indicator" style="background-color: #20c997;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="53-tet" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Harmonic Series -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <button class="btn btn-link btn-sm p-0 text-light" data-bs-toggle="collapse" data-bs-target="#harmonic-series">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <small class="ms-2 text-uppercase text-muted fw-bold">Harmonic</small>
+                        </div>
+                        <div class="collapse" id="harmonic-series">
+                            <div class="tuning-option" data-system="overtones">
+                                <input type="checkbox" id="overtones" class="form-check-input">
+                                <label for="overtones" class="form-check-label small">Overtones</label>
+                                <div class="tuning-indicator" style="background-color: #17a2b8;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="overtones" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="undertones">
+                                <input type="checkbox" id="undertones" class="form-check-input">
+                                <label for="undertones" class="form-check-label small">Undertones</label>
+                                <div class="tuning-indicator" style="background-color: #6c757d;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="undertones" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Arabic/Middle Eastern Systems -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <button class="btn btn-link btn-sm p-0 text-light" data-bs-toggle="collapse" data-bs-target="#arabic-systems">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <small class="ms-2 text-uppercase text-muted fw-bold">Arabic/ME</small>
+                        </div>
+                        <div class="collapse" id="arabic-systems">
+                            <div class="tuning-option" data-system="arabic-24">
+                                <input type="checkbox" id="arabic-24" class="form-check-input">
+                                <label for="arabic-24" class="form-check-label small">Arabic 24-Quarter</label>
+                                <div class="tuning-indicator" style="background-color: #d63384;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="arabic-24" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="turkish-53">
+                                <input type="checkbox" id="turkish-53" class="form-check-input">
+                                <label for="turkish-53" class="form-check-label small">Turkish Makam</label>
+                                <div class="tuning-indicator" style="background-color: #dc3545;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="turkish-53" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="persian">
+                                <input type="checkbox" id="persian" class="form-check-input">
+                                <label for="persian" class="form-check-label small">Persian Dastgah</label>
+                                <div class="tuning-indicator" style="background-color: #fd7e14;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="persian" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Indian Classical Systems -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <button class="btn btn-link btn-sm p-0 text-light" data-bs-toggle="collapse" data-bs-target="#indian-systems">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <small class="ms-2 text-uppercase text-muted fw-bold">Indian Classical</small>
+                        </div>
+                        <div class="collapse" id="indian-systems">
+                            <div class="tuning-option" data-system="carnatic">
+                                <input type="checkbox" id="carnatic" class="form-check-input">
+                                <label for="carnatic" class="form-check-label small">Carnatic (22 Sruti)</label>
+                                <div class="tuning-indicator" style="background-color: #ff6b35;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="carnatic" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <div class="tuning-option" data-system="hindustani">
+                                <input type="checkbox" id="hindustani" class="form-check-input">
+                                <label for="hindustani" class="form-check-label small">Hindustani (22 Sruti)</label>
+                                <div class="tuning-indicator" style="background-color: #f7931e;"></div>
+                                <button class="btn btn-link btn-sm p-0 ms-2 tuning-info-btn" data-system="hindustani" title="Show Arpeggiator">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Canvas Area -->
+                <div id="canvas-container">
+                    <canvas id="frequency-canvas"></canvas>
+                    
+                    <!-- Frequency Display Overlay -->
+                    <div id="frequency-display" class="card">
+                        <div class="card-body p-2">
+                            <div class="small">
+                                <div><strong>Frequency:</strong> <span id="freq-value">--</span></div>
+                                <div><strong>Note:</strong> <span id="note-value">--</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pinned Points Panel -->
+                <div id="pinned-panel" class="bg-dark p-3">
+                    <h6 class="mb-3">Pinned Points <span id="point-count" class="badge bg-secondary">0</span></h6>
+                    
+                    <div id="points-list">
+                        <div class="text-muted small text-center py-3">
+                            Click on the spiral to pin frequency points
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 pt-3 border-top">
+                        <button id="clear-all" class="btn btn-outline-warning btn-sm w-100">
+                            <i class="bi bi-trash"></i> Clear All Points
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Arpeggiator Panel -->
+        <div id="arpeggiator-panel" class="bottom-panel bg-dark border-top">
+            <div class="container-fluid p-2">
+                <!-- Panel Header -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                        <h6 class="mb-0 me-3 small">
+                            <i class="bi bi-music-note-list"></i> 
+                            <span id="arp-system-name">Select a tuning system</span>
+                        </h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-1">
+                                <label class="form-label mb-0 small">Sequence:</label>
+                                <select id="arp-sequence" class="form-select form-select-sm" style="width: 180px;">
+                                    <option value="">Select sequence...</option>
+                                </select>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <label class="form-label mb-0 small">Style:</label>
+                                <select id="arp-style" class="form-select form-select-sm" style="width: 100px;">
+                                    <option value="sequence">Sequence</option>
+                                    <option value="up">Up</option>
+                                    <option value="down">Down</option>
+                                    <option value="up-down">Up-Down</option>
+                                </select>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <label class="form-label mb-0 small">Tempo:</label>
+                                <input type="range" id="arp-tempo" class="form-range" 
+                                       min="60" max="200" value="120" style="width: 80px;">
+                                <span id="arp-tempo-display" class="small">120 BPM</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <label class="form-label mb-0 small">Instrument:</label>
+                                <select id="arp-instrument" class="form-select form-select-sm" style="width: 100px;">
+                                    <option value="guitar">Guitar</option>
+                                    <option value="piano">Piano</option>
+                                    <option value="bell">Bell</option>
+                                    <option value="sine">Sine Wave</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <button id="arp-play" class="btn btn-success btn-sm" disabled>
+                            <i class="bi bi-play-fill"></i> Play
+                        </button>
+                        <button id="arp-stop" class="btn btn-outline-danger btn-sm" disabled>
+                            <i class="bi bi-stop-fill"></i> Stop
+                        </button>
+                        <button id="arp-close" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Arpeggiator Content -->
+                <div id="arp-content-container">
+                    <!-- Piano Roll Visualization -->
+                    <div id="arp-piano-roll">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <h6 class="mb-0 small">
+                                    <i class="bi bi-music-note-beamed"></i> 
+                                    <span id="arp-sequence-name">Sequence Visualization</span>
+                                </h6>
+                                <span id="arp-sequence-description" class="small text-muted"></span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <div id="arp-sequence-info" class="small text-muted">
+                                </div>
+                                <button id="spiral-mode-toggle" class="btn btn-outline-info btn-sm">
+                                    <i class="bi bi-arrow-clockwise"></i> Hide from Spiral
+                                </button>
+                            </div>
+                        </div>
+                        <div id="arp-piano-roll-canvas-container" class="border rounded" style="height: 120px; background-color: #1a1a1a;">
+                            <canvas id="arp-piano-roll-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="arps.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

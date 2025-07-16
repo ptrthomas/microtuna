@@ -1,0 +1,324 @@
+/**
+ * Microtuna - Music Scale Explorer Styles
+ * Custom CSS for the logarithmic spiral frequency visualizer
+ * Professional DAW-inspired dark theme interface
+ * 
+ * Copyright (c) 2025 Peter Thomas
+ * Licensed under the MIT License - see LICENSE file for details
+ */
+
+body { 
+    background-color: #212529; 
+    color: #fff;
+    overflow: hidden; /* Prevent page scrolling */
+    height: 100vh;
+}
+
+#canvas-container {
+    position: relative;
+    flex-grow: 1;
+    height: 100%;
+}
+
+#frequency-canvas {
+    border: 1px solid #495057;
+    background-color: #343a40;
+    cursor: crosshair;
+    position: relative;
+    z-index: 1;
+}
+
+#frequency-display {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    min-width: 200px;
+}
+
+#pinned-panel {
+    width: 300px;
+    min-width: 300px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-left: 1px solid #495057;
+}
+
+.point-row {
+    background-color: #495057;
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.point-row.muted {
+    opacity: 0.5;
+}
+
+.freq-input {
+    width: 80px;
+    background-color: #343a40;
+    border: 1px solid #6c757d;
+    color: #fff;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.control-btn {
+    padding: 2px 6px;
+    margin: 0 2px;
+    font-size: 0.8em;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #17a2b8 !important;
+}
+
+.btn-audio {
+    transition: all 0.3s ease;
+}
+
+.btn-audio.active {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+#tuning-panel {
+    width: 250px;
+    min-width: 250px;
+    max-height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid #495057;
+    transition: all 0.3s ease;
+}
+
+#tuning-panel.collapsed {
+    width: 40px;
+    min-width: 40px;
+}
+
+#tuning-panel.collapsed .tuning-content {
+    display: none;
+}
+
+.tuning-option {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    margin-bottom: 2px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+.tuning-option:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tuning-option input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.tuning-option label {
+    flex-grow: 1;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.tuning-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    margin-left: 8px;
+    opacity: 0.7;
+}
+
+.tuning-option input[type="checkbox"]:checked + label + .tuning-indicator {
+    opacity: 1;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 56px); /* Account for navbar height */
+}
+
+.top-section {
+    flex: 1;
+    min-height: 0;
+}
+
+.bottom-panel {
+    min-height: 180px;
+    max-height: 50vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: none;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+}
+
+.bottom-panel.show {
+    display: block;
+}
+
+.tuning-info-btn {
+    color: #6c757d;
+    transition: color 0.2s ease;
+}
+
+.tuning-info-btn:hover {
+    color: #fff;
+}
+
+.tuning-option.selected .tuning-info-btn {
+    color: #17a2b8;
+}
+
+#arp-notes-container {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.arp-note {
+    display: inline-block;
+    margin: 4px;
+    padding: 8px 12px;
+    border: 2px solid #495057;
+    border-radius: 8px;
+    background-color: #343a40;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    min-width: 60px;
+    text-align: center;
+}
+
+.arp-note:hover {
+    border-color: #6c757d;
+    background-color: #495057;
+}
+
+.arp-note.active {
+    border-color: #28a745;
+    background-color: #1e7e34;
+    color: #fff;
+}
+
+.arp-note.playing {
+    border-color: #ffc107;
+    background-color: #e0a800;
+    color: #000;
+    transform: scale(1.1);
+}
+
+.arp-note.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #343a40;
+    background-color: #212529;
+}
+
+.arp-note .note-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.arp-note .note-freq {
+    font-size: 10px;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+.arp-note .note-cents {
+    font-size: 9px;
+    opacity: 0.6;
+    margin-top: 1px;
+}
+
+/* Piano Roll Styles */
+#arp-piano-roll-canvas-container {
+    position: relative;
+    /* Removed overflow: hidden to allow content to be visible */
+}
+
+#arp-piano-roll-canvas {
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+}
+
+.piano-roll-note {
+    position: absolute;
+    background-color: #17a2b8;
+    border: 1px solid #138496;
+    border-radius: 2px;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.piano-roll-note:hover {
+    opacity: 1;
+    transform: scale(1.02);
+    z-index: 10;
+    background-color: #20c997;
+    border-color: #1aa179;
+}
+
+.piano-roll-note.playing {
+    background-color: #ffc107;
+    border-color: #e0a800;
+    color: #000;
+    transform: scale(1.1);
+    z-index: 20;
+}
+
+.piano-roll-note.mapped {
+    background-color: #e83e8c;
+    border-color: #d73384;
+}
+
+.piano-roll-note.mapped:hover {
+    background-color: #ea5d95;
+}
+
+.piano-roll-playhead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #dc3545;
+    z-index: 15;
+    transition: left 0.1s linear;
+}
+
+.piano-roll-grid-line {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.piano-roll-grid-line.beat {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.piano-roll-grid-line.bar {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.arp-sequence-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
