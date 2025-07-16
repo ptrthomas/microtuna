@@ -1,5 +1,9 @@
 # Microtuna - Music Scale Explorer
 
+[![Microtuna Music Scale Explorer](microtuna-screenshot.png)](https://ptrthomas.github.io/microtuna)
+
+**[🎵 Try the Live App](https://ptrthomas.github.io/microtuna)**
+
 A web-based logarithmic spiral frequency visualizer that allows users to explore harmonic relationships between musical frequencies through an interactive interface. Features real-time audio synthesis, multiple tuning system overlays, and an intelligent arpeggiator for exploring scales.
 
 ## Features
@@ -113,6 +117,7 @@ We're particularly interested in:
 ## Planned Features
 
 - **Pitch-Bend System**: Continuous pitch variation with mouse gestures for authentic world music ornaments
+- **Arpeggiator Sequence Styles**: Play sequences in different orders (ascending, descending, up-down patterns, random)
 - **Cross-Tuning Mapping**: Map melodies between different tuning systems to hear and compare differences
 - **Cultural Ornaments**: Authentic gamakas (Indian), maqam inflections (Arabic/Turkish), and tahrir (Persian)
 - **Gesture Recording**: Save and replay pitch-bend sequences

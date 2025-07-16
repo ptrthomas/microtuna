@@ -836,6 +836,9 @@ class Microtuna {
                 if (this.currentSequence) {
                     this.renderPianoRoll();
                 }
+                // Recalculate canvas size after panel is shown
+                this.setupCanvas();
+                this.draw();
             }, 50); // Small delay to ensure panel is fully rendered
             
             // Update visual state
@@ -852,6 +855,18 @@ class Microtuna {
             if (playBtn) {
                 playBtn.disabled = false;
             }
+            
+            // Initialize spiral mode toggle button state
+            const spiralToggle = document.getElementById('spiral-mode-toggle');
+            if (spiralToggle) {
+                if (this.spiralSequenceMode) {
+                    spiralToggle.innerHTML = '<i class="bi bi-music-note-beamed"></i> Hide from Spiral';
+                    spiralToggle.classList.add('active');
+                } else {
+                    spiralToggle.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Show on Spiral';
+                    spiralToggle.classList.remove('active');
+                }
+            }
         }
     }
     
@@ -866,6 +881,13 @@ class Microtuna {
         this.arpeggiatorVisible = false;
         this.selectedTuningSystem = null;
         this.spiralSequenceMode = false; // Reset mapping mode
+        
+        // Reset spiral mode toggle button
+        const spiralToggle = document.getElementById('spiral-mode-toggle');
+        if (spiralToggle) {
+            spiralToggle.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Show on Spiral';
+            spiralToggle.classList.remove('active');
+        }
         
         // Disable map controls
         const mapBtn = document.getElementById('arp-map-toggle');
@@ -885,8 +907,11 @@ class Microtuna {
             opt.classList.remove('selected');
         });
         
-        // Redraw spiral in normal mode
-        this.draw();
+        // Recalculate canvas size after panel is hidden and redraw spiral
+        setTimeout(() => {
+            this.setupCanvas();
+            this.draw();
+        }, 50); // Small delay to ensure panel hide transition is complete
     }
     
     toggleSpiralSequenceMode() {

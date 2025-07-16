@@ -778,6 +778,55 @@ const ORNAMENT_PATTERNS = {
 
 This pitch-bend implementation would significantly enhance the authenticity of world music system playback while maintaining the educational and exploratory nature of Microtuna.
 
+### Arpeggiator Sequence Styles (Future Feature)
+
+#### Overview
+Add playback style variations to pre-defined sequences for enhanced musical exploration:
+- **Sequence**: Play notes exactly as defined in the original sequence (current behavior)
+- **Up**: Sort sequence notes by frequency and play ascending
+- **Down**: Sort sequence notes by frequency and play descending  
+- **Up-Down**: Play ascending then descending in a loop
+- **Random**: Randomize note order while preserving rhythm and velocity
+
+#### Technical Implementation
+```javascript
+class SequenceStyleProcessor {
+  static applyStyle(sequence, style) {
+    const originalNotes = sequence.notes;
+    
+    switch(style) {
+      case 'up':
+        return this.sortByFrequency(originalNotes, 'ascending');
+      case 'down':
+        return this.sortByFrequency(originalNotes, 'descending');
+      case 'up-down':
+        return this.createUpDownPattern(originalNotes);
+      case 'random':
+        return this.randomizeOrder(originalNotes);
+      default: // 'sequence'
+        return originalNotes;
+    }
+  }
+  
+  static sortByFrequency(notes, direction) {
+    const sorted = [...notes].sort((a, b) => {
+      const freqA = this.getFrequency(a);
+      const freqB = this.getFrequency(b);
+      return direction === 'ascending' ? freqA - freqB : freqB - freqA;
+    });
+    
+    // Preserve total duration and distribute timing
+    return this.redistributeTiming(sorted);
+  }
+}
+```
+
+#### Interface Integration
+- **Dropdown placement**: Between Sequence selector and Tempo slider
+- **Style options**: Sequence (default), Up, Down, Up-Down, Random
+- **Live preview**: Piano roll updates immediately when style changes
+- **Tempo preservation**: Original tempo maintained across all styles
+
 ### Cross-Tuning System Mapping (Planned Feature)
 *This feature was prototyped but removed due to complexity. Planned for future implementation.*
 
